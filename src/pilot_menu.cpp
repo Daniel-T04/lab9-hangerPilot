@@ -1,7 +1,5 @@
 #include "pilot_menu.h"
-
 #include <iostream>
-
 #include "input.h"
 
 namespace {
@@ -23,7 +21,7 @@ void print_pilots(const std::vector<Pilot>& pilots) {
     }
     for (std::size_t i = 0; i < pilots.size(); ++i) {
         std::cout << (i + 1) << ". ";
-        print_pilot(pilots[i]);
+        pilots[i].print();
     }
 }
 
@@ -64,10 +62,10 @@ void run_pilot_menu(std::vector<Pilot>& pilots) {
             if (!read_line("Name: ", name) || !read_int("Skill: ", -500, 500, skill)) {
                 return;
             }
-            Pilot recruit{name, skill, 0, 0};
+            Pilot recruit(name, skill);
             pilots.push_back(recruit);
             std::cout << "Hired: ";
-            print_pilot(pilots.back());
+            pilots.back().print();
 
         } else if (choice == 3) {
             int index = pick_pilot(pilots);
@@ -75,12 +73,12 @@ void run_pilot_menu(std::vector<Pilot>& pilots) {
                 continue;
             }
             Pilot& pilot = pilots[static_cast<std::size_t>(index)];
-            if (fly_mission(pilot)) {
-                std::cout << pilot.name << " flew a mission. Fatigue is now "
-                          << pilot.fatigue << ".\n";
+            if (pilot.fly_mission()) {
+                std::cout << pilot.name() << " flew a mission. Fatigue is now "
+                          << pilot.fatigue() << ".\n";
             } else {
-                std::cout << pilot.name << " is too tired to fly (fatigue "
-                          << pilot.fatigue << ").\n";
+                std::cout << pilot.name() << " is too tired to fly (fatigue "
+                          << pilot.fatigue() << ").\n";
             }
 
         } else if (choice == 4) {
@@ -89,8 +87,9 @@ void run_pilot_menu(std::vector<Pilot>& pilots) {
                 continue;
             }
             Pilot& pilot = pilots[static_cast<std::size_t>(index)];
-            rest(pilot);
-            std::cout << pilot.name << " rested. Fatigue is now " << pilot.fatigue << ".\n";
+            pilot.rest();
+            std::cout << pilot.name() << " rested. Fatigue is now " << pilot.fatigue() 
+            << ".\n";
 
         } else if (choice == 5) {
             int index = pick_pilot(pilots);
@@ -102,8 +101,8 @@ void run_pilot_menu(std::vector<Pilot>& pilots) {
                 return;
             }
             Pilot& pilot = pilots[static_cast<std::size_t>(index)];
-            pilot.skill += change;
-            std::cout << pilot.name << "'s skill is now " << pilot.skill << ".\n";
+             pilot.change_skill(change);
+            std::cout << pilot.name() << "'s skill is now " << pilot.skill() << ".\n";
 
         } else {
             return;
